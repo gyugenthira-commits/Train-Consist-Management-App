@@ -1,30 +1,72 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TrainManagementApp {
 
-    static class Bogie {
-        String name;
-        int capacity;
+    public static void main(String[] args) {
 
-        Bogie(String n, int c) {
-            name = n;
-            capacity =c;
-        }
+        List<Bogie> bogies = new ArrayList<>();
+
+        // Sample data (reuse from UC7)
+        bogies.add(new PassengerBogie("B1", 80, "Sleeper"));
+        bogies.add(new PassengerBogie("B2", 60, "AC Chair"));
+        bogies.add(new PassengerBogie("B3", 72, "First Class"));
+        bogies.add(new PassengerBogie("B4", 50, "Sleeper"));
+
+        int threshold = 60;
+
+        // UC8: Stream Filtering
+        List<Bogie> filteredBogies = bogies.stream()
+                .filter(b -> b.getCapacity() > threshold)
+                .collect(Collectors.toList());
+
+        System.out.println("Filtered Bogies (Capacity > " + threshold + "):");
+
+        filteredBogies.forEach(System.out::println);
+    }
+}
+
+/* =========================
+   Base Class
+   ========================= */
+abstract class Bogie {
+    protected String id;
+    protected int capacity;
+
+    public Bogie(String id, int capacity) {
+        this.id = id;
+        this.capacity = capacity;
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== Train Consist Management App ===");
+    public int getCapacity() {
+        return capacity;
+    }
 
-        List<Bogie> list = new ArrayList<>();
+    public String getId() {
+        return id;
+    }
 
-        list.add(new Bogie("Sleeper", 72));
-        list.add(new Bogie("AC Chair", 56));
-        list.add(new Bogie("First Class", 24));
+    public abstract String getType();
 
-        list.sort(Comparator.comparingInt(b -> b.capacity));
+    @Override
+    public String toString() {
+        return getType() + " Bogie [ID=" + id + ", Capacity=" + capacity + "]";
+    }
+}
 
-        for (Bogie b : list) {
-            System.out.println(b.name + " -> " + b.capacity);
-        }
+/* =========================
+   Passenger Bogie Class
+   ========================= */
+class PassengerBogie extends Bogie {
+    private String category; // Sleeper, AC Chair, First Class
+
+    public PassengerBogie(String id, int capacity, String category) {
+        super(id, capacity);
+        this.category = category;
+    }
+
+    @Override
+    public String getType() {
+        return "Passenger (" + category + ")";
     }
 }
