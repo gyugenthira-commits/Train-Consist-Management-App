@@ -7,22 +7,23 @@ public class TrainManagementApp {
 
         List<Bogie> bogies = new ArrayList<>();
 
-        // Sample data (reuse from UC7)
+        // Sample data
         bogies.add(new PassengerBogie("B1", 80, "Sleeper"));
         bogies.add(new PassengerBogie("B2", 60, "AC Chair"));
         bogies.add(new PassengerBogie("B3", 72, "First Class"));
         bogies.add(new PassengerBogie("B4", 50, "Sleeper"));
+        bogies.add(new PassengerBogie("B5", 65, "AC Chair"));
 
-        int threshold = 60;
+        // UC9: Grouping using Streams
+        Map<String, List<Bogie>> groupedBogies = bogies.stream()
+                .collect(Collectors.groupingBy(Bogie::getType));
 
-        // UC8: Stream Filtering
-        List<Bogie> filteredBogies = bogies.stream()
-                .filter(b -> b.getCapacity() > threshold)
-                .collect(Collectors.toList());
+        System.out.println("Grouped Bogies by Type:\n");
 
-        System.out.println("Filtered Bogies (Capacity > " + threshold + "):");
-
-        filteredBogies.forEach(System.out::println);
+        groupedBogies.forEach((type, list) -> {
+            System.out.println("Type: " + type);
+            list.forEach(b -> System.out.println("  " + b));
+        });
     }
 }
 
@@ -58,7 +59,7 @@ abstract class Bogie {
    Passenger Bogie Class
    ========================= */
 class PassengerBogie extends Bogie {
-    private String category; // Sleeper, AC Chair, First Class
+    private String category;
 
     public PassengerBogie(String id, int capacity, String category) {
         super(id, capacity);
@@ -67,6 +68,6 @@ class PassengerBogie extends Bogie {
 
     @Override
     public String getType() {
-        return "Passenger (" + category + ")";
+        return category; // Key for grouping (Sleeper, AC Chair, etc.)
     }
 }
