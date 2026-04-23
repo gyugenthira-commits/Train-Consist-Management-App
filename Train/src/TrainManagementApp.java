@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TrainManagementApp {
 
@@ -12,18 +11,13 @@ public class TrainManagementApp {
         bogies.add(new PassengerBogie("B2", 60, "AC Chair"));
         bogies.add(new PassengerBogie("B3", 72, "First Class"));
         bogies.add(new PassengerBogie("B4", 50, "Sleeper"));
-        bogies.add(new PassengerBogie("B5", 65, "AC Chair"));
 
-        // UC9: Grouping using Streams
-        Map<String, List<Bogie>> groupedBogies = bogies.stream()
-                .collect(Collectors.groupingBy(Bogie::getType));
+        // UC10: Total Seat Calculation using reduce
+        int totalSeats = bogies.stream()
+                .map(b -> b.getCapacity())   // extract capacity
+                .reduce(0, Integer::sum);   // aggregate
 
-        System.out.println("Grouped Bogies by Type:\n");
-
-        groupedBogies.forEach((type, list) -> {
-            System.out.println("Type: " + type);
-            list.forEach(b -> System.out.println("  " + b));
-        });
+        System.out.println("Total Seating Capacity: " + totalSeats);
     }
 }
 
@@ -68,6 +62,6 @@ class PassengerBogie extends Bogie {
 
     @Override
     public String getType() {
-        return category; // Key for grouping (Sleeper, AC Chair, etc.)
+        return category;
     }
 }
