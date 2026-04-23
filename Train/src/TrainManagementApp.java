@@ -1,67 +1,40 @@
-import java.util.*;
+import java.util.regex.*;
 
 public class TrainManagementApp {
 
+    // Regex patterns
+    private static final String TRAIN_ID_REGEX = "TRN-\\d{4}";
+    private static final String CARGO_CODE_REGEX = "PET-[A-Z]{2}";
+
     public static void main(String[] args) {
 
-        List<Bogie> bogies = new ArrayList<>();
+        String trainId = "TRN-1234";
+        String cargoCode = "PET-AB";
 
-        // Sample data
-        bogies.add(new PassengerBogie("B1", 80, "Sleeper"));
-        bogies.add(new PassengerBogie("B2", 60, "AC Chair"));
-        bogies.add(new PassengerBogie("B3", 72, "First Class"));
-        bogies.add(new PassengerBogie("B4", 50, "Sleeper"));
+        boolean isTrainValid = validateTrainId(trainId);
+        boolean isCargoValid = validateCargoCode(cargoCode);
 
-        // UC10: Total Seat Calculation using reduce
-        int totalSeats = bogies.stream()
-                .map(b -> b.getCapacity())   // extract capacity
-                .reduce(0, Integer::sum);   // aggregate
-
-        System.out.println("Total Seating Capacity: " + totalSeats);
-    }
-}
-
-/* =========================
-   Base Class
-   ========================= */
-abstract class Bogie {
-    protected String id;
-    protected int capacity;
-
-    public Bogie(String id, int capacity) {
-        this.id = id;
-        this.capacity = capacity;
+        System.out.println("Train ID: " + trainId + " -> " + (isTrainValid ? "Valid" : "Invalid"));
+        System.out.println("Cargo Code: " + cargoCode + " -> " + (isCargoValid ? "Valid" : "Invalid"));
     }
 
-    public int getCapacity() {
-        return capacity;
+    // Validate Train ID
+    public static boolean validateTrainId(String trainId) {
+        if (trainId == null || trainId.isEmpty()) return false;
+
+        Pattern pattern = Pattern.compile(TRAIN_ID_REGEX);
+        Matcher matcher = pattern.matcher(trainId);
+
+        return matcher.matches();
     }
 
-    public String getId() {
-        return id;
-    }
+    // Validate Cargo Code
+    public static boolean validateCargoCode(String cargoCode) {
+        if (cargoCode == null || cargoCode.isEmpty()) return false;
 
-    public abstract String getType();
+        Pattern pattern = Pattern.compile(CARGO_CODE_REGEX);
+        Matcher matcher = pattern.matcher(cargoCode);
 
-    @Override
-    public String toString() {
-        return getType() + " Bogie [ID=" + id + ", Capacity=" + capacity + "]";
-    }
-}
-
-/* =========================
-   Passenger Bogie Class
-   ========================= */
-class PassengerBogie extends Bogie {
-    private String category;
-
-    public PassengerBogie(String id, int capacity, String category) {
-        super(id, capacity);
-        this.category = category;
-    }
-
-    @Override
-    public String getType() {
-        return category;
+        return matcher.matches();
     }
 }
