@@ -1,76 +1,66 @@
-import java.util.*;
-
 public class TrainManagementApp {
 
     public static void main(String[] args) {
 
-        try {
-            PassengerBogie b1 = new PassengerBogie("B1", 80, "Sleeper");
-            PassengerBogie b2 = new PassengerBogie("B2", -10, "AC Chair"); // invalid
+        GoodsBogie b1 = new GoodsBogie("G1", "Cylindrical");
+        GoodsBogie b2 = new GoodsBogie("G2", "Rectangular");
 
-            System.out.println(b1);
-            System.out.println(b2);
+        b1.assignCargo("Petroleum"); // valid
+        b2.assignCargo("Petroleum"); // invalid
 
-        } catch (InvalidCapacityException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        b2.assignCargo("Coal"); // valid after failure
+
+        System.out.println(b1);
+        System.out.println(b2);
     }
 }
 
-/* =========================
-   Custom Exception
-   ========================= */
-class InvalidCapacityException extends Exception {
-    public InvalidCapacityException(String message) {
+/* ========================= */
+class CargoSafetyException extends RuntimeException {
+    public CargoSafetyException(String message) {
         super(message);
     }
 }
 
-/* =========================
-   Base Class
-   ========================= */
-abstract class Bogie {
-    protected String id;
-    protected int capacity;
+/* ========================= */
+class GoodsBogie {
+    private String id;
+    private String type;
+    private String cargo;
 
-    public Bogie(String id, int capacity) {
+    public GoodsBogie(String id, String type) {
         this.id = id;
-        this.capacity = capacity;
+        this.type = type;
     }
 
-    public int getCapacity() {
-        return capacity;
-    }
+    public void assignCargo(String cargo) {
+        try {
+            if (type.equalsIgnoreCase("Rectangular") &&
+                    cargo.equalsIgnoreCase("Petroleum")) {
+                throw new CargoSafetyException("Unsafe cargo for rectangular bogie");
+            }
 
-    public String getId() {
-        return id;
-    }
-}
+            this.cargo = cargo;
+            System.out.println("Cargo assigned: " + cargo + " to " + id);
 
-/* =========================
-   Passenger Bogie
-   ========================= */
-class PassengerBogie extends Bogie {
-    private String category;
+        } catch (CargoSafetyException e) {
+            System.out.println("Error: " + e.getMessage());
 
-    public PassengerBogie(String id, int capacity, String category)
-            throws InvalidCapacityException {
-
-        super(id, capacity);
-
-        if (capacity <= 0) {
-            throw new InvalidCapacityException("Capacity must be greater than zero");
+        } finally {
+            System.out.println("Assignment attempt completed for " + id);
         }
-
-        this.category = category;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCargo() {
+        return cargo;
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override
     public String toString() {
-        return "PassengerBogie [ID=" + id + ", Capacity=" + capacity + ", Category=" + category + "]";
+        return "GoodsBogie [ID=" + id + ", Type=" + type + ", Cargo=" + cargo + "]";
     }
 }
