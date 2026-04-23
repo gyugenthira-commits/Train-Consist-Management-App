@@ -1,40 +1,55 @@
-import java.util.regex.*;
+import java.util.*;
 
 public class TrainManagementApp {
 
-    // Regex patterns
-    private static final String TRAIN_ID_REGEX = "TRN-\\d{4}";
-    private static final String CARGO_CODE_REGEX = "PET-[A-Z]{2}";
-
     public static void main(String[] args) {
 
-        String trainId = "TRN-1234";
-        String cargoCode = "PET-AB";
+        List<GoodsBogie> goodsBogies = new ArrayList<>();
 
-        boolean isTrainValid = validateTrainId(trainId);
-        boolean isCargoValid = validateCargoCode(cargoCode);
+        // Sample data
+        goodsBogies.add(new GoodsBogie("G1", "Cylindrical", "Petroleum"));
+        goodsBogies.add(new GoodsBogie("G2", "Open", "Coal"));
+        goodsBogies.add(new GoodsBogie("G3", "Box", "Grain"));
 
-        System.out.println("Train ID: " + trainId + " -> " + (isTrainValid ? "Valid" : "Invalid"));
-        System.out.println("Cargo Code: " + cargoCode + " -> " + (isCargoValid ? "Valid" : "Invalid"));
+        // UC12: Safety Validation using Streams
+        boolean isSafe = goodsBogies.stream()
+                .allMatch(b ->
+                        !b.getType().equalsIgnoreCase("Cylindrical") ||
+                                b.getCargo().equalsIgnoreCase("Petroleum")
+                );
+
+        System.out.println("Train Safety Compliance: " + (isSafe ? "SAFE" : "UNSAFE"));
+    }
+}
+
+/* =========================
+   Goods Bogie Class
+   ========================= */
+class GoodsBogie {
+    private String id;
+    private String type;   // Cylindrical, Open, Box
+    private String cargo;  // Petroleum, Coal, Grain
+
+    public GoodsBogie(String id, String type, String cargo) {
+        this.id = id;
+        this.type = type;
+        this.cargo = cargo;
     }
 
-    // Validate Train ID
-    public static boolean validateTrainId(String trainId) {
-        if (trainId == null || trainId.isEmpty()) return false;
-
-        Pattern pattern = Pattern.compile(TRAIN_ID_REGEX);
-        Matcher matcher = pattern.matcher(trainId);
-
-        return matcher.matches();
+    public String getId() {
+        return id;
     }
 
-    // Validate Cargo Code
-    public static boolean validateCargoCode(String cargoCode) {
-        if (cargoCode == null || cargoCode.isEmpty()) return false;
+    public String getType() {
+        return type;
+    }
 
-        Pattern pattern = Pattern.compile(CARGO_CODE_REGEX);
-        Matcher matcher = pattern.matcher(cargoCode);
+    public String getCargo() {
+        return cargo;
+    }
 
-        return matcher.matches();
+    @Override
+    public String toString() {
+        return "GoodsBogie [ID=" + id + ", Type=" + type + ", Cargo=" + cargo + "]";
     }
 }
