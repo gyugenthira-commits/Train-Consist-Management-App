@@ -1,53 +1,28 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TrainManagementApp {
 
     public static void main(String[] args) {
 
-        List<Bogie> bogies = generateBogies(10000); // large dataset
+        try {
+            PassengerBogie b1 = new PassengerBogie("B1", 80, "Sleeper");
+            PassengerBogie b2 = new PassengerBogie("B2", -10, "AC Chair"); // invalid
 
-        // 🔹 Loop-based filtering
-        long startLoop = System.nanoTime();
+            System.out.println(b1);
+            System.out.println(b2);
 
-        List<Bogie> loopResult = new ArrayList<>();
-        for (Bogie b : bogies) {
-            if (b.getCapacity() > 60) {
-                loopResult.add(b);
-            }
+        } catch (InvalidCapacityException e) {
+            System.out.println("Error: " + e.getMessage());
         }
-
-        long endLoop = System.nanoTime();
-        long loopTime = endLoop - startLoop;
-
-        // 🔹 Stream-based filtering
-        long startStream = System.nanoTime();
-
-        List<Bogie> streamResult = bogies.stream()
-                .filter(b -> b.getCapacity() > 60)
-                .collect(Collectors.toList());
-
-        long endStream = System.nanoTime();
-        long streamTime = endStream - startStream;
-
-        // Output
-        System.out.println("Loop Result Size: " + loopResult.size());
-        System.out.println("Stream Result Size: " + streamResult.size());
-
-        System.out.println("Loop Execution Time (ns): " + loopTime);
-        System.out.println("Stream Execution Time (ns): " + streamTime);
     }
+}
 
-    // Generate sample bogies
-    public static List<Bogie> generateBogies(int count) {
-        List<Bogie> list = new ArrayList<>();
-        Random rand = new Random();
-
-        for (int i = 0; i < count; i++) {
-            int capacity = 30 + rand.nextInt(100); // random capacity
-            list.add(new PassengerBogie("B" + i, capacity, "Sleeper"));
-        }
-        return list;
+/* =========================
+   Custom Exception
+   ========================= */
+class InvalidCapacityException extends Exception {
+    public InvalidCapacityException(String message) {
+        super(message);
     }
 }
 
@@ -78,8 +53,24 @@ abstract class Bogie {
 class PassengerBogie extends Bogie {
     private String category;
 
-    public PassengerBogie(String id, int capacity, String category) {
+    public PassengerBogie(String id, int capacity, String category)
+            throws InvalidCapacityException {
+
         super(id, capacity);
+
+        if (capacity <= 0) {
+            throw new InvalidCapacityException("Capacity must be greater than zero");
+        }
+
         this.category = category;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    @Override
+    public String toString() {
+        return "PassengerBogie [ID=" + id + ", Capacity=" + capacity + ", Category=" + category + "]";
     }
 }
