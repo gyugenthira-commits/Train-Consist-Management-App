@@ -1,25 +1,36 @@
+import java.util.Arrays;
+
 public class TrainManagementApp {
 
     public static void main(String[] args) {
 
-        String[] bogieIds = {"BG101","BG205","BG309","BG412","BG550"};
-        String searchKey = "BG309";
+        String[] bogieIds = {"BG309","BG101","BG550","BG205","BG412"};
+        String searchKey = "BG205";
 
-        boolean found = linearSearch(bogieIds, searchKey);
+        boolean found = binarySearch(bogieIds, searchKey);
 
-        if (found) {
-            System.out.println("Bogie found: " + searchKey);
-        } else {
-            System.out.println("Bogie not found: " + searchKey);
-        }
+        System.out.println(found ? "Bogie found: " + searchKey
+                : "Bogie not found: " + searchKey);
     }
 
-    public static boolean linearSearch(String[] arr, String key) {
-        for (String id : arr) {
-            if (id.equals(key)) {
-                return true;
-            }
+    public static boolean binarySearch(String[] arr, String key) {
+
+        if (arr == null || arr.length == 0) return false;
+
+        Arrays.sort(arr);
+
+        int low = 0, high = arr.length - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+
+            int cmp = key.compareTo(arr[mid]);
+
+            if (cmp == 0) return true;
+            else if (cmp < 0) high = mid - 1;
+            else low = mid + 1;
         }
+
         return false;
     }
 }
