@@ -1,16 +1,25 @@
-import java.util.Arrays;
-
 public class TrainManagementApp {
 
     public static void main(String[] args) {
 
-        String[] bogieNames = {
-                "Sleeper", "AC Chair", "First Class", "General", "Luxury"
-        };
+        String[] bogieIds = {"BG101","BG205","BG309","BG412","BG550"};
+        String searchKey = "BG309";
 
-        Arrays.sort(bogieNames);
+        boolean found = linearSearch(bogieIds, searchKey);
 
-        System.out.println("Sorted Bogie Names:");
-        System.out.println(Arrays.toString(bogieNames));
+        if (found) {
+            System.out.println("Bogie found: " + searchKey);
+        } else {
+            System.out.println("Bogie not found: " + searchKey);
+        }
+    }
+
+    public static boolean linearSearch(String[] arr, String key) {
+        for (String id : arr) {
+            if (id.equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
