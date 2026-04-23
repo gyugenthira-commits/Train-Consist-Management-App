@@ -1,55 +1,85 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TrainManagementApp {
 
     public static void main(String[] args) {
 
-        List<GoodsBogie> goodsBogies = new ArrayList<>();
+        List<Bogie> bogies = generateBogies(10000); // large dataset
 
-        // Sample data
-        goodsBogies.add(new GoodsBogie("G1", "Cylindrical", "Petroleum"));
-        goodsBogies.add(new GoodsBogie("G2", "Open", "Coal"));
-        goodsBogies.add(new GoodsBogie("G3", "Box", "Grain"));
+        // 🔹 Loop-based filtering
+        long startLoop = System.nanoTime();
 
-        // UC12: Safety Validation using Streams
-        boolean isSafe = goodsBogies.stream()
-                .allMatch(b ->
-                        !b.getType().equalsIgnoreCase("Cylindrical") ||
-                                b.getCargo().equalsIgnoreCase("Petroleum")
-                );
+        List<Bogie> loopResult = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.getCapacity() > 60) {
+                loopResult.add(b);
+            }
+        }
 
-        System.out.println("Train Safety Compliance: " + (isSafe ? "SAFE" : "UNSAFE"));
+        long endLoop = System.nanoTime();
+        long loopTime = endLoop - startLoop;
+
+        // 🔹 Stream-based filtering
+        long startStream = System.nanoTime();
+
+        List<Bogie> streamResult = bogies.stream()
+                .filter(b -> b.getCapacity() > 60)
+                .collect(Collectors.toList());
+
+        long endStream = System.nanoTime();
+        long streamTime = endStream - startStream;
+
+        // Output
+        System.out.println("Loop Result Size: " + loopResult.size());
+        System.out.println("Stream Result Size: " + streamResult.size());
+
+        System.out.println("Loop Execution Time (ns): " + loopTime);
+        System.out.println("Stream Execution Time (ns): " + streamTime);
+    }
+
+    // Generate sample bogies
+    public static List<Bogie> generateBogies(int count) {
+        List<Bogie> list = new ArrayList<>();
+        Random rand = new Random();
+
+        for (int i = 0; i < count; i++) {
+            int capacity = 30 + rand.nextInt(100); // random capacity
+            list.add(new PassengerBogie("B" + i, capacity, "Sleeper"));
+        }
+        return list;
     }
 }
 
 /* =========================
-   Goods Bogie Class
+   Base Class
    ========================= */
-class GoodsBogie {
-    private String id;
-    private String type;   // Cylindrical, Open, Box
-    private String cargo;  // Petroleum, Coal, Grain
+abstract class Bogie {
+    protected String id;
+    protected int capacity;
 
-    public GoodsBogie(String id, String type, String cargo) {
+    public Bogie(String id, int capacity) {
         this.id = id;
-        this.type = type;
-        this.cargo = cargo;
+        this.capacity = capacity;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 
     public String getId() {
         return id;
     }
+}
 
-    public String getType() {
-        return type;
-    }
+/* =========================
+   Passenger Bogie
+   ========================= */
+class PassengerBogie extends Bogie {
+    private String category;
 
-    public String getCargo() {
-        return cargo;
-    }
-
-    @Override
-    public String toString() {
-        return "GoodsBogie [ID=" + id + ", Type=" + type + ", Cargo=" + cargo + "]";
+    public PassengerBogie(String id, int capacity, String category) {
+        super(id, capacity);
+        this.category = category;
     }
 }
