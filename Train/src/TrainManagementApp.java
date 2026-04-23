@@ -1,34 +1,25 @@
-import java.util.Arrays;
-
 public class TrainManagementApp {
 
     public static void main(String[] args) {
 
-        String[] bogieIds = {"BG309","BG101","BG550","BG205","BG412"};
+        String[] bogieIds = {"BG101","BG205","BG309"};
         String searchKey = "BG205";
 
-        boolean found = binarySearch(bogieIds, searchKey);
+        boolean found = searchBogie(bogieIds, searchKey);
 
-        System.out.println(found ? "Bogie found: " + searchKey
-                : "Bogie not found: " + searchKey);
+        System.out.println(found ? "Bogie found" : "Bogie not found");
     }
 
-    public static boolean binarySearch(String[] arr, String key) {
+    public static boolean searchBogie(String[] arr, String key) {
 
-        if (arr == null || arr.length == 0) return false;
+        if (arr == null || arr.length == 0) {
+            throw new IllegalStateException("No bogies available for search");
+        }
 
-        Arrays.sort(arr);
-
-        int low = 0, high = arr.length - 1;
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-
-            int cmp = key.compareTo(arr[mid]);
-
-            if (cmp == 0) return true;
-            else if (cmp < 0) high = mid - 1;
-            else low = mid + 1;
+        for (String id : arr) {
+            if (id.equals(key)) {
+                return true;
+            }
         }
 
         return false;
